@@ -1,8 +1,12 @@
 # python_utils
 Python utils I like to have.
+## Add to your repo
+In your repo root folder\
+`git submodule add https://github.com/lakazatong/python_utils libs/python_utils`
 ## Import
-This repo is to be added as a git submodule in a `libs` folder in your root folder
-### Inside the libs folder
+### From files inside the libs folder
 * `from python_utils.utils.all import *`
 ### Outside
 * `import sys; sys.path.append('libs'); from python_utils.utils.all import *`
+## Update your submodules
+* `git submodule update --remote --merge`
