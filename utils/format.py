@@ -6,8 +6,8 @@ except:
 	os.system('pip install pytz')
 	import pytz
 from datetime import datetime, timezone
-from utils.str import *
-from utils.print import *
+from python_utils.utils.str import *
+from python_utils.utils.print import *
 
 def convert_to_unix_time(date_str, format_str):
 	parsed_date = datetime.strptime(date_str, format_str)

@@ -4,8 +4,8 @@ try:
 except:
 	os.system('pip install requests')
 	import requests
-from utils.os import from_windows
-from utils.print import cprint
+from python_utils.utils.os import from_windows
+from python_utils.utils.print import cprint
 '''
 status codes
 
