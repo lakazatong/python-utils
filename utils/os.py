@@ -1,5 +1,5 @@
 import os, threading, platform, io, sys, asyncio
-from libs.utils.debug import cprint
+from utils.print import cprint
 
 def from_windows():
 	return platform.system() == 'Windows'
