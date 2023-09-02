@@ -1,4 +1,4 @@
-import io
+import os, io
 try:
 	from PIL import Image
 except:
