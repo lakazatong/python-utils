@@ -1,13 +1,6 @@
 import json, inspect, pprint, zlib
-try:
-	from bs4 import BeautifulSoup
-except:
-	import os
-	os.system('pip install beautifulsoup4')
-	from bs4 import BeautifulSoup
 
 BLACK, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE = 30, 31, 32, 33, 34, 35, 36, 37
-# in case not all was imported (from debug import *)
 color_codes = {
 	'black': 30,
 	'red': 31,
@@ -19,13 +12,21 @@ color_codes = {
 	'white': 37
 }
 # make it work for windows?
-def cprint(string, color=37, end='\n'):
+def cprint(string, color=37, end='\n', bold=False, italic=False):
 	if type(color) is str: color = color_codes.get(color.lower())
+	bold_txt = '\033[1m' if bold else ''
+	italic_txt = '\033[3m' if italic else ''
 	if color:
-		print(f"\033[{color}m{string}\033[0m", end=end)
+		print(f"{bold_txt}{italic_txt}\033[{color}m{string}\033[0m", end=end)
 	else:
 		print(f'cprint: Unknown color ({color}), available colors are:\n')
 		print_json(color_codes)
+
+try:
+	from bs4 import BeautifulSoup
+except:
+	cprint("python_utils: failed to import BeautifulSoup", color=RED)
+	pass
 
 def print_var(var, indent=3, color=37):
 	callers_local_vars = inspect.currentframe().f_back.f_locals.items()
