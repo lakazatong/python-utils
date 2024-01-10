@@ -73,7 +73,7 @@ def print_rainbow(buffer, t, keyword=default_rainbow_keyword, smoothness=0.005, 
 		r, g, b = [int(x * 255) for x in colorsys.hsv_to_rgb(hue, 1.0, 1.0)]
 		hue +=smoothness
 		time.sleep(speed)
-		if hue > 1.0: hue = 0.0
+		if hue >= 1.0: hue = 0.0
 	print(modified_buffer)
 
 # somewhat merge cprint and print_rainbow? im not sure
