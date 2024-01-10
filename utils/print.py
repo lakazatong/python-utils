@@ -4,6 +4,10 @@ BeautifulSoup = try_import("BeautifulSoup", _from="bs4")
 json = try_import("json")
 inspect = try_import("inspect")
 pprint = try_import("pprint")
+re = try_import("re")
+time = try_import("time")
+sys = try_import("sys")
+colorsys = try_import("colorsys")
 #try_import("zlib")
 
 BLACK, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE = 30, 31, 32, 33, 34, 35, 36, 37
@@ -27,6 +31,52 @@ def cprint(string, color=37, end='\n', bold=False, italic=False):
 		print(f"{bold_txt}{italic_txt}\033[{color}m{string}\033[0m", end=end)
 	else:
 		print(f'cprint: Unknown color ({color}), available colors are: {available_color_codes}\n')
+
+# example use :
+'''
+buffer = """a very long tet
+with arainbow(many lines)a
+yolo"""
+
+print("bulls\nshit")
+print_rainbow(buffer, 2)
+print("some other\nbullshit")
+
+will print:
+bulls
+shit
+a very long tet
+with amany linesa
+yolo
+some other
+bullshit
+
+with "many lines" rainbow'ing for 2s, after what some other
+bullshit will be printed
+'''
+default_rainbow_keyword = "rainbow"
+default_rainbow_pattern = re.compile(rf'{default_rainbow_keyword}\((.*?)\)')
+def print_rainbow(buffer, t, keyword=default_rainbow_keyword, smoothness=0.005, speed=0.01):
+	r, g, b = 0, 0, 0
+	pattern = re.compile(rf'{keyword}\((.*?)\)') if keyword != default_rainbow_keyword else default_rainbow_pattern
+	last_line_len = len(buffer.split("\n")[-1])
+	nb_newlines = buffer.count('\n') + 1
+	st = time.time()
+	hue = 0.0
+	while True:
+		modified_buffer = re.sub(pattern, rf'\033[38;2;{r};{g};{b}m\1\033[0m', buffer)
+		if time.time() - st > t:
+			break
+		modified_buffer += f"\033[{last_line_len}D\033[{nb_newlines}A"
+		sys.stdout.write(modified_buffer + "\n")
+		sys.stdout.flush()
+		r, g, b = [int(x * 255) for x in colorsys.hsv_to_rgb(hue, 1.0, 1.0)]
+		hue +=smoothness
+		time.sleep(speed)
+		if hue > 1.0: hue = 0.0
+	print(modified_buffer)
+
+# somewhat merge cprint and print_rainbow? im not sure
 
 def report(message, color=WHITE, module=None):
     function_name = report.calling_function
