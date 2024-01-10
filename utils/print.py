@@ -79,17 +79,17 @@ def print_rainbow(buffer, t, keyword=default_rainbow_keyword, smoothness=0.005, 
 # somewhat merge cprint and print_rainbow? im not sure
 
 def report(message, color=WHITE, module=None):
-    function_name = report.calling_function
-    cprint(f"{module}: {function_name}: {message}" if module else f"{function_name}: {message}", color=color)
+	function_name = report.calling_function
+	cprint(f"{module}: {function_name}: {message}" if module else f"{function_name}: {message}", color=color)
 
 def ereport(message, module=None):
 	report(message, RED, module)
 
 def reportd(func):
-    def wrapper(*args, **kwargs):
-        report.calling_function = func.__name__
-        return func(report=report, ereport=ereport, *args, **kwargs)
-    return wrapper
+	def wrapper(*args, **kwargs):
+		report.calling_function = func.__name__
+		return func(report=report, ereport=ereport, *args, **kwargs)
+	return wrapper
 
 def print_var(var, indent=3, color=37):
 	callers_local_vars = inspect.currentframe().f_back.f_locals.items()
