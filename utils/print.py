@@ -1,32 +1,45 @@
-import json, inspect, pprint, zlib
+from .os import try_import
+
+BeautifulSoup = try_import("BeautifulSoup", _from="bs4")
+json = try_import("json")
+inspect = try_import("inspect")
+pprint = try_import("pprint")
+#try_import("zlib")
 
 BLACK, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE = 30, 31, 32, 33, 34, 35, 36, 37
 color_codes = {
-	'black': 30,
-	'red': 31,
-	'green': 32,
-	'yellow': 33,
-	'blue': 34,
-	'purple': 35,
-	'cyan': 36,
-	'white': 37
+	'black': BLACK,
+	'red': RED,
+	'green': GREEN,
+	'yellow': YELLOW,
+	'blue': BLUE,
+	'purple': PURPLE,
+	'cyan': CYAN,
+	'white': WHITE
 }
+available_color_codes = list(color_codes.keys())
 # make it work for windows?
 def cprint(string, color=37, end='\n', bold=False, italic=False):
 	if type(color) is str: color = color_codes.get(color.lower())
 	bold_txt = '\033[1m' if bold else ''
 	italic_txt = '\033[3m' if italic else ''
-	if color:
+	if color in color_codes.values():
 		print(f"{bold_txt}{italic_txt}\033[{color}m{string}\033[0m", end=end)
 	else:
-		print(f'cprint: Unknown color ({color}), available colors are:\n')
-		print_json(color_codes)
+		print(f'cprint: Unknown color ({color}), available colors are: {available_color_codes}\n')
 
-try:
-	from bs4 import BeautifulSoup
-except:
-	cprint("python_utils: failed to import BeautifulSoup", color=RED)
-	pass
+def report(message, color=WHITE, module=None):
+    function_name = report.calling_function
+    cprint(f"{module}: {function_name}: {message}" if module else f"{function_name}: {message}", color=color)
+
+def ereport(message, module=None):
+	report(message, RED, module)
+
+def reportd(func):
+    def wrapper(*args, **kwargs):
+        report.calling_function = func.__name__
+        return func(report=report, ereport=ereport, *args, **kwargs)
+    return wrapper
 
 def print_var(var, indent=3, color=37):
 	callers_local_vars = inspect.currentframe().f_back.f_locals.items()

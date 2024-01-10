@@ -1,10 +1,20 @@
-import re, os, urllib, webbrowser, paramiko, time, requests 
-from bs4 import BeautifulSoup
+from .os import try_import
+
+re = try_import("re")
+os = try_import("os")
+urllib = try_import("urllib")
+webbrowser = try_import("webbrowser")
+paramiko = try_import("paramiko")
+time = try_import("time")
+requests = try_import("requests")
+BeautifulSoup = try_import("BeautifulSoup", _from="bs4")
+load_dotenv = try_import("load_dotenv", _from="dotenv")
+
 from .os import from_windows, TimeIt
 from .print import cprint
 from .list import *
 from .constants import tmp_folder_path, python_utils_tmp_folder_path
-from dotenv import load_dotenv
+
 '''
 status codes
 
@@ -16,13 +26,14 @@ status codes
 
 '''
 
-# allows for indent_width with BeautifulSoup.prettify
-# source : https://stackoverflow.com/a/15513483
-orig_prettify = BeautifulSoup.prettify
-r = re.compile(r'^(\s*)', re.MULTILINE)
-def prettify(self, encoding=None, formatter="minimal", indent_width=4):
-	return r.sub(r'\1' * indent_width, orig_prettify(self, encoding, formatter))
-BeautifulSoup.prettify = prettify
+if BeautifulSoup and re:
+	# allows for indent_width with BeautifulSoup.prettify
+	# source: https://stackoverflow.com/a/15513483
+	orig_prettify = BeautifulSoup.prettify
+	r = re.compile(r'^(\s*)', re.MULTILINE)
+	def prettify(self, encoding=None, formatter="minimal", indent_width=4):
+		return r.sub(r'\1' * indent_width, orig_prettify(self, encoding, formatter))
+	BeautifulSoup.prettify = prettify
 
 def decode_url(url):
 	return urllib.parse.unquote(url)

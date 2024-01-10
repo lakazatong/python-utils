@@ -1,4 +1,8 @@
-import os, json
+from .os import try_import
+
+os = try_import("os")
+json = try_import("json")
+
 from .print import cprint
 
 def get_attributes(obj):

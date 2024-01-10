@@ -1,4 +1,7 @@
-import os
+from .os import try_import
+
+os = try_import("os")
+
 from .print import cprint
 
 def read_file(path, mode='r'):

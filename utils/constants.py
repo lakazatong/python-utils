@@ -1,5 +1,6 @@
-import tempfile
+from .os import try_import
 
-measure_time = 0.00000012014758825302124
+tempfile = try_import("tempfile")
+
 tmp_folder_path = tempfile.gettempdir()
-python_utils_tmp_folder_path = tmp_folder_path+'/python_utils'
+python_utils_tmp_folder_path = tmp_folder_path+'/python_utils'	

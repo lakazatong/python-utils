@@ -1,5 +1,8 @@
-import os, io
-from PIL import Image
+from .os import try_import
+
+os = try_import("os")
+io = try_import("io")
+Image = try_import("Image", _from="PIL")
 
 def resize_image(input_img_path, output_img_path, new_width, new_height):
 	image = Image.open(input_img_path)

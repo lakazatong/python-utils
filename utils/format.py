@@ -1,6 +1,12 @@
-import time, re, copy
-import pytz
-from datetime import datetime, timezone
+from .os import try_import
+
+time = try_import("time")
+re = try_import("re")
+copy = try_import("copy")
+pytz = try_import("pytz")
+timezone = try_import("timezone", _from="datetime")
+datetime = try_import("datetime", _from="datetime")
+
 from .str import *
 from .print import *
 from .list import *
