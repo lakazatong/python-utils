@@ -9,5 +9,6 @@ As source
 ## Update your submodules
 * `git submodule update --remote --merge`
 ## Remove the submodule
-Taken from https://gist.github.com/myusuf3/7f645819ded92bda6677?permalink_comment_id=3915500#gistcomment-3915500:
 * `path=python_utils && git submodule deinit -f path && rm -rf .git/modules/path && git rm -f path`
+
+Taken from [here](https://gist.github.com/myusuf3/7f645819ded92bda6677?permalink_comment_id=3915500#gistcomment-3915500).
