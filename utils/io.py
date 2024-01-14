@@ -27,8 +27,10 @@ def count_files_in_dir(directory, check_if_file=True):
 			count += 1
 	return count
 
-def get_matches(path: str, pattern: re.Pattern) -> List[Tuple[str, str]]:
+def get_matches(path: str, pattern: re.Pattern, preprocess_function=None, *args) -> List[Tuple[str, str]]:
 	content = ''
 	with open(path, 'r') as f:
 		content = f.read()
+	if preprocess_function:
+		content = preprocess_function(content, *args)
 	return re.findall(pattern, content)
