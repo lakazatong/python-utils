@@ -20,11 +20,20 @@ def code_to_txt(code):
 	return code.replace('   ', '\\t').replace('''
 ''', '\\n')
 
-def txt_to_code(code):
-	code.replace('\\\\t', '\\t')
-	code.replace('\\\\n', '\\n')
-	return code.replace('\\t', '    ').replace('\\n', '''
+def txt_to_code(txt):
+	txt.replace('\\\\t', '\\t')
+	txt.replace('\\\\n', '\\n')
+	return txt.replace('\\t', '    ').replace('\\n', '''
 ''')
+
+def long_string(string, whitespace=[' ', '\t']):
+	r = ''
+	for split in string.split('\n'):
+		i = 0
+		while split[i] in whitespace:
+			i += 1
+		r += split[i:].replace('\\n', '\n')
+	return r
 
 def guess_order(ls):
 	ns = {}

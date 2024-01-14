@@ -34,3 +34,12 @@ def get_matches(path: str, pattern: re.Pattern, preprocess_function=None, *args)
 	if preprocess_function:
 		content = preprocess_function(content, *args)
 	return re.findall(pattern, content)
+
+def ask(body_msg: str, continue_msg: str = 'do you want to continue nonetheless? (y or n)\n',
+		accept_inputs: List[str] = ['y'], refuse_input: List[str] = ['n'], exit_code: int = 0):
+	print(body_msg, end='')
+	tmp = input(continue_msg)
+	while not tmp in accept_inputs:
+		if tmp in refuse_input:
+			exit(exit_code)
+		tmp = input(continue_msg)
