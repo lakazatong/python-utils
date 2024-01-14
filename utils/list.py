@@ -1,3 +1,5 @@
+from typing import List
+
 class list(list):
 	def get(self, element):
 		for i in range(len(self)):
@@ -18,3 +20,8 @@ class list(list):
 	def stable_dups_removal(self):
 		seen = set()
 		return [x for x in self if x not in seen and not seen.add(x)]
+	def getany(self: List) -> int:
+		for index, value in enumerate(self):
+			if value:
+				return index
+		return -1
