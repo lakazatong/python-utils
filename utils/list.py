@@ -15,3 +15,6 @@ class list(list):
 			if e == element:
 				return self.pop(i)
 		return None
+	def stable_dups_removal(self):
+		seen = set()
+		return [x for x in self if x not in seen and not seen.add(x)]

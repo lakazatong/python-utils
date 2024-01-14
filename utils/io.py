@@ -1,6 +1,8 @@
 from .os import try_import
 
+from typing import List, Tuple
 os = try_import("os")
+re = try_import("re")
 
 from .print import cprint
 
@@ -24,3 +26,9 @@ def count_files_in_dir(directory, check_if_file=True):
 		for path in os.scandir(directory):
 			count += 1
 	return count
+
+def get_matches(path: str, pattern: re.Pattern) -> List[Tuple[str, str]]:
+	content = ''
+	with open(path, 'r') as f:
+		content = f.read()
+	return re.findall(pattern, content)

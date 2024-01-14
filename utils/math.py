@@ -1,15 +1,11 @@
 from .os import try_import
 
-# List = try_import("List", _from="typing")
-# Union = try_import("Union", _from="typing")
-# from typing import List
-# from typing import Union
+from typing import List, Tuple
 
 def is_power_of_two(number):
 	return number & (number - 1) == 0 and number != 0
 
-# def divide(n:int, nb:int) -> List[Union[int, int]]:
-def divide(n:int, nb:int):
+def divide(n:int, nb:int) -> List[Tuple[int, int]]:
 	quotient = n // nb
 	remainder = n % nb
 	start_indices = [i * quotient + min(i, remainder) for i in range(nb)]
