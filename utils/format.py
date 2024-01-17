@@ -1,5 +1,7 @@
 from .os import try_import
 
+from typing import List, Tuple
+
 time = try_import("time")
 re = try_import("re")
 copy = try_import("copy")
@@ -174,24 +176,75 @@ def _parse_check_option_value(value):
 		value[2] = list(value[2] if value[2] else [])
 	return 0
 
-def parse(input_string, options, first=False, default_arguments=[], default_options=None, default_help=True, default_help_value=True):
-	# considers that shorts begin with '-' and longs with '--'
-	# options format:
-	# options = [
-	#	[option1_takes_arg, ["option1_short1", "option1_short2", ...], ["option1_long1", "option1_long2", ...]],
-	#	[option2_takes_arg, ["option2_short2", "option2_short2", ...], ["option2_long1", "option2_long2", ...]],
-	# 	...
-	# ]
-	# the shorts or longs list can be empty or null (considered as empty) in which case the other must not be empty
-	# returns arguments, parsed_options
-	# arguments being the list of all arguments (including the default ones if provided)
-	# parsed_options being the list of all options values (including the default ones if provided)
-	# parsed_options[0] being the value of the first option in the options list
-	# set first to True if the input_string does not contain the command name
-	# a default help option is added: [False, ["h", "?"], ["help"]], you can disable that by setting default_help to False
-	# also by default, it will be at the end so parsed_options[-1] is the help option value
-	# it is 1 if no argument and no option is provided, u can disable that by setting default_help_value to False (requires default_help to be True)
+def parse_command_line_arguments(input_string: str, 
+		options: List[Tuple[bool, List[str], List[str]]],
+		ignore_first: bool = False,
+		default_arguments: List[str] = [],
+		default_options: List[Tuple[bool, List[str], List[str]]] = None,
+		default_help: bool = True,
+		default_help_value: bool = True) -> Tuple[List[str], List[str]]:
+	'''
+	Description
+		Parses command-line arguments and options.
+
+	Args
+		input_string		 The input string containing command-line arguments.
+		options				 List of options with format specified in the notes.
+		ignore_first		 Whether to ignore the first element in the input_string.
+		default_arguments	 Default arguments to include.
+		default_options		 Default options values.
+		default_help		 Whether to include a default help option.
+		default_help_value	 Whether to set the help option if no argument and no option provided.
+
+	Returns
+		arguments 		List of all arguments.
+		parsed_options	List of all options values.
+
+	Notes
+		options is of the format [
+			[option1_takes_arg, ["option1_short1", "option1_short2", ...], ["option1_long1", "option1_long2", ...]],
+			[option2_takes_arg, ["option2_short2", "option2_short2", ...], ["option2_long1", "option2_long2", ...]],
+				...
+		]
+
+		considers that shorts begin with '-' and longs with '--'
+		
+		the shorts or longs list in options can be empty or None (considered as empty)
+		in which case the other must not be
+		
+		arguments and parsed_options also includes the default ones
+		parsed_options[i] is the value of the i-th option in the options list
+		for options that take an argument, its value is None if none found 
+		
+		the default_help option: [False, ["h", "?"], ["help"]]
+		its value will always be last in parsed_options
+
+		supports concatenation of short options that take no argument
+
+		returns [], [] in case of errors
+
+		the last value is used for each option
 	
+	Example
+		code
+			input_string =
+				"script -fvi --path src foo bar --path dist --output baz -d GNU_SOURCE --define DEBUG"
+			options = [
+				[False, ["f"], ["force"]],
+				[False, ["v"], ["verbose"]],
+				[False, ["i"], ["install"]],
+				[True, [], ["path", "output"]],
+				[True, [], ["define"]]
+			]
+			print(parse_command_line_arguments(input_string,
+				options,
+				ignore_first = True,
+				default_arguments = ["main.c"]))
+		
+		stdout
+			["main.c", "foo", "bar", "-d", "GNU_SOURCE"], [True, True, True, "baz", "DEBUG", False]
+	'''
+
 	# init / prepare parsing
 	txt = input_string.strip()
 	while '  ' in txt: txt = txt.replace('  ', ' ')
@@ -199,21 +252,20 @@ def parse(input_string, options, first=False, default_arguments=[], default_opti
 	arguments = default_arguments
 	parsed_options = list()
 	if default_options:
-		parsed_options = copy.deepcopy(default_options)
 		for value in options:
-			if _parse_check_option_value(value):
-				return None, None
+			if _parse_check_option_value(value): return None, None
+		parsed_options = copy.deepcopy(default_options)
+		for i in range(len(options) - len(default_options)):
+			parsed_options.append(None)
 	else:
 		for value in options:
-			if value[0]: parsed_options.append(None)
-			else: parsed_options.append(False)
-			if _parse_check_option_value(value):
-				return None, None
+			if _parse_check_option_value(value): return None, None
+			parsed_options.append(None if value[0] else False)
 	if default_help:
 		options.append([False, list(["h", "?"]), list(["help"])])
 		parsed_options.append(False)
 	options_found = 0
-	i = 0 if first else 1
+	i = 1 if ignore_first else 0
 	
 	# parse input_string
 	while i < len(l):
