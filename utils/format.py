@@ -101,7 +101,7 @@ def ansi_text(text, esc_format=None, esc=None, end=None):
 	# replaces occurences of:
 	# [color <options>]
 	
-	# example:  ansi_text(this [bgyellow]is some[reset] long [blue]text with [bg    red _]colored parts, esc_format='shell')
+	# example:  ansi_text("this [bgyellow]is some[reset] long [blue]text with [bg    red _]colored parts", esc_format='shell')
 	# 			becomes:
 	#			this \e[0;43mis some\e[0m long \e[0;34mtext with \e[4;41mcolored parts\e[0m -- (add a reset at the end by default)
 	
