@@ -120,47 +120,45 @@ def ansi_text(text, esc_format=None, esc=None, end=None):
 			else:
 				cprint(f'ansi_text: Unknown format ({esc_format})', 'red')
 				return None
-	matches = re.finditer(r"\[[?*?_?(bg)?(hi)a-z\s]+\]", text)
-	try:
-		offset = 0
-		for m in matches:
-			st = m.start()-offset
-			ed = m.end()-offset
-			match = text[st+1:ed-1]
-			n = len(match)+2
-			color_offset = 0
-			dec = 0
-			i =	match.find('*')
-			if i != -1:
-				match = match[:i]+match[i+1:]
-				dec = 1
-			i =	match.find('_')
-			if i != -1:
-				match = match[:i]+match[i+1:]
-				dec = 4
-			i =	match.find('bg')
-			if i != -1:
-				match = match[:i]+match[i+2:]
-				color_offset += 10
-			i =	match.find('hi')
-			if i != -1:
-				match = match[:i]+match[i+2:]
-				color_offset += 60
-			while '  ' in match:
-				match = match.replace('  ', ' ')
-			match = match.replace(' ', '')
-			match = match.strip()
-
-			if match == 'reset':
-				new = esc+'[0m'
-			else:
-				color = str(color_codes[match]+color_offset)
-				new = f'{esc}[{dec};{color}m'
-			offset += n - len(new)
-			text = text[:st]+new+text[ed:]
-	except Exception as e:
-		cprint(f'ansi_text: failed ({e})', 'red')
-		return None
+	matches = re.finditer(r"\[[*_a-z\s]+\]", text)
+	offset = 0
+	for m in matches:
+		st = m.start()-offset
+		ed = m.end()-offset
+		match = text[st+1:ed-1]
+		while '  ' in match:
+			match = match.replace('  ', ' ')
+		match = match.replace(' ', '')
+		match = match.strip()
+		n = len(match)+2
+		color_offset = 0
+		dec = 0
+		i =	match.find('*')
+		if i != -1:
+			match = match[:i]+match[i+1:]
+			dec = 1
+		i =	match.find('_')
+		if i != -1:
+			match = match[:i]+match[i+1:]
+			dec = 4
+		i =	match.find('bg')
+		if i != -1:
+			match = match[:i]+match[i+2:]
+			color_offset += 10
+		i =	match.find('hi')
+		if i != -1:
+			match = match[:i]+match[i+2:]
+			color_offset += 60
+		new = ''
+		if match == 'reset':
+			new = esc+'[0m'
+		elif match in color_codes:
+			color = str(color_codes[match]+color_offset)
+			new = f'{esc}[{dec};{color}m'
+		else:
+			continue
+		offset += n - len(new)
+		text = text[:st]+new+text[ed:]
 	r = text+end if end else text+esc+'[0m'
 	return r
 

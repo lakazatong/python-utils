@@ -1,42 +1,52 @@
-# source: ChatGPT
-def run_import(_import, _from, _as):
-	if _as:
-		if _from:
-			globals()[_as] = __import__(_import, fromlist=[_from])
-		else:
-			globals()[_as] = __import__(_import)
-		return globals()[_as]
-	else:
-		if _from:
-			globals()[_import] = __import__(_import, fromlist=[_from])
-		else:
-			globals()[_import] = __import__(_import)
-		return globals()[_import]
+import importlib
 
-def try_import(_import, _from=None, _as=None, verbose=True, critical=False):
+def run_import(_import, prefix, verbose, critical):
+	_import_type = type(_import)
+	if _import_type is str:
+		return importlib.import_module(_import)
+	elif _import_type is list:
+		r = []
+		for __import in _import:
+			__import_type = type(__import)
+			if __import_type is str:
+				r.append(importlib.import_module(__import))
+			else:
+				if verbose: print(f"{prefix}unsupported type {__import_type}\033[0m")
+				if critical: exit(1)
+				r.append(None)
+		return r
+	else:
+		if verbose: print(f"{prefix}unsupported type {_import_type}\033[0m")
+		if critical: exit(1)
+		return None
+
+def try_import(_import, _from=None, verbose=True, critical=False):
 	prefix = f"\033[33mpython_utils: "
 	if not _import:
 		print(f"{prefix}can't import nothing\033[0m")
 		if critical: exit(1)
 		return None
 	_from_txt = f"from {_from} " if _from else ""
-	_as_txt = f" as {_as}" if _as else ""
-	_code_txt = f"{_from_txt}import {_import}{_as_txt}"
-
+	_code_txt = f"{_from_txt}import {_import}"
 	try:
-		_import_type = type(_import)
-		if _import_type is str:
-			return run_import(_import, _from, _as)
-		# elif _import_type is list:
-		# 	if _as:
-		# 		print(f"{prefix}`{_code_txt}` is not valid python\033[0m")
-		# 		if critical: exit(1)
-		# 	# assumes a list of str
-		# 	for __import in _import: run_import(__import, _from, _as)
+		if _from:
+			_from_type = type(_from)
+			if not _from_type is str:
+				if verbose: print(f"{prefix}unsupported type {_from_type}\033[0m")
+				if critical: exit(1)
+				return None
+			tmp = importlib.import_module(_from)
+			_import_type = type(_import)
+			if _import_type is str:
+				return getattr(tmp, _import)	
+			elif _import_type is list:
+				return [getattr(tmp, __import) for __import in _import]
+			else:
+				if verbose: print(f"{prefix}unsupported type {_import_type}\033[0m")
+				if critical: exit(1)
+				return None
 		else:
-			print(f"{prefix}unsupported type {_import_type}\033[0m")
-			if critical: exit(1)
-			return None
+			return run_import(_import, prefix, verbose, critical)
 	except:
 		if verbose: print(f"{prefix}`{_code_txt}` failed\033[0m")
 		if critical: exit(1)
