@@ -284,7 +284,7 @@ def parse_command_line_arguments(input_string: str,
 					options_found += 1
 				is_arg = False
 				break
-			elif e[0] != '_' and len(e) >= 2 and e[0] == '-' and e[1] in shorts:
+			elif len(e) >= 2 and e[0] == '-' and e[1] in shorts:
 				if len(e) == 2:
 					if takes_arg:
 						if i+1 < len(l):
@@ -299,7 +299,7 @@ def parse_command_line_arguments(input_string: str,
 					if not takes_arg:
 						multiple_short_options = True
 						multiple_short_options_indexes = [k]
-						for c in e[2]:
+						for c in e[2:]:
 							option = None
 							takes_arg = False
 							j = -1
